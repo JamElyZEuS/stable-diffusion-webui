@@ -100,7 +100,10 @@ def webui():
             inbrowser=cmd_opts.autolaunch,
             prevent_thread_lock=True
         )
-
+        
+        if cmd_opts.share_ngrok:
+            print('It works!')
+        
         while 1:
             time.sleep(0.5)
             if getattr(demo, 'do_restart', False):
