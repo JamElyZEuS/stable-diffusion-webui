@@ -8,7 +8,6 @@ import os
 import random
 import sys
 import time
-from tkinter.messagebox import NO
 import traceback
 import platform
 import subprocess as sp
