@@ -48,6 +48,8 @@ if not cmd_opts.share and not cmd_opts.listen:
     gradio.utils.version_check = lambda: None
     gradio.utils.get_local_ip_address = lambda: '127.0.0.1'
 
+if cmd_opts.ngrok != None:
+    print('It works! ngrok authtoken: ', cmd_opts.ngrok)
 
 def gr_show(visible=True):
     return {"visible": visible, "__type__": "update"}
