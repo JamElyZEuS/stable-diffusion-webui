@@ -8,6 +8,7 @@ import os
 import random
 import sys
 import time
+from tkinter.messagebox import NO
 import traceback
 import platform
 import subprocess as sp
@@ -37,6 +38,7 @@ import modules.generation_parameters_copypaste
 from modules.prompt_parser import get_learned_conditioning_prompt_schedules
 from modules.images import apply_filename_pattern, get_next_sequence_number
 import modules.textual_inversion.ui
+import modules.ngrok as ngrok
 
 # this is a fix for Windows users. Without it, javascript files will be served with text/html content-type and the bowser will not show any UI
 mimetypes.init()
@@ -48,8 +50,6 @@ if not cmd_opts.share and not cmd_opts.listen:
     gradio.utils.version_check = lambda: None
     gradio.utils.get_local_ip_address = lambda: '127.0.0.1'
 
-if cmd_opts.ngrok != None:
-    print('It works! ngrok authtoken: ', cmd_opts.ngrok)
 
 def gr_show(visible=True):
     return {"visible": visible, "__type__": "update"}
@@ -1424,3 +1424,8 @@ if 'gradio_routes_templates_response' not in globals():
 
     gradio_routes_templates_response = gradio.routes.templates.TemplateResponse
     gradio.routes.templates.TemplateResponse = template_response
+
+
+if cmd_opts.ngrok != None:
+    print('ngrok authtoken detected, trying to connect...')
+    ngrok.connect(cmd_opts.ngrok, cmd_opts.port if cmd_opts.port != None else 7860)
