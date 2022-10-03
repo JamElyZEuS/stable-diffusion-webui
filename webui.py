@@ -95,7 +95,6 @@ def webui():
             share=cmd_opts.share,
             server_name="0.0.0.0" if cmd_opts.listen else None,
             server_port=cmd_opts.port,
-            ngrok=cmd_opts.ngrok,
             debug=cmd_opts.gradio_debug,
             auth=[tuple(cred.split(':')) for cred in cmd_opts.gradio_auth.strip('"').split(',')] if cmd_opts.gradio_auth else None,
             inbrowser=cmd_opts.autolaunch,
