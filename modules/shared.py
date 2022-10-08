@@ -13,12 +13,11 @@ import modules.memmon
 import modules.sd_models
 import modules.styles
 import modules.devices as devices
-from modules import sd_samplers
-from modules.paths import script_path, sd_path
+from modules import sd_samplers, hypernetwork
+from modules.paths import models_path, script_path, sd_path
 
 sd_model_file = os.path.join(script_path, 'model.ckpt')
 default_sd_model_file = sd_model_file
-model_path = os.path.join(script_path, 'models')
 parser = argparse.ArgumentParser()
 parser.add_argument("--config", type=str, default=os.path.join(sd_path, "configs/stable-diffusion/v1-inference.yaml"), help="path to config which constructs model",)
 parser.add_argument("--ckpt", type=str, default=sd_model_file, help="path to checkpoint of stable diffusion model; if specified, this checkpoint will be added to the list of checkpoints and loaded",)
@@ -77,6 +76,12 @@ batch_cond_uncond = cmd_opts.always_batch_cond_uncond or not (cmd_opts.lowvram o
 parallel_processing_allowed = not cmd_opts.lowvram and not cmd_opts.medvram
 
 config_filename = cmd_opts.ui_settings_file
+
+hypernetworks = hypernetwork.load_hypernetworks(os.path.join(models_path, 'hypernetworks'))
+
+
+def selected_hypernetwork():
+    return hypernetworks.get(opts.sd_hypernetwork, None)
 
 
 class State:
@@ -208,6 +213,7 @@ options_templates.update(options_section(('system', "System"), {
 
 options_templates.update(options_section(('sd', "Stable Diffusion"), {
     "sd_model_checkpoint": OptionInfo(None, "Stable Diffusion checkpoint", gr.Dropdown, lambda: {"choices": modules.sd_models.checkpoint_tiles()}),
+    "sd_hypernetwork": OptionInfo("None", "Stable Diffusion finetune hypernetwork", gr.Dropdown, lambda: {"choices": ["None"] + [x for x in hypernetworks.keys()]}),
     "img2img_color_correction": OptionInfo(False, "Apply color correction to img2img results to match original colors."),
     "save_images_before_color_correction": OptionInfo(False, "Save a copy of image before applying color correction to img2img results"),
     "img2img_fix_steps": OptionInfo(False, "With img2img, do exactly the amount of steps the slider specifies (normally you'd do less with less denoising)."),
@@ -237,6 +243,7 @@ options_templates.update(options_section(('ui', "User interface"), {
     "font": OptionInfo("", "Font for image grids that have text"),
     "js_modal_lightbox": OptionInfo(True, "Enable full page image viewer"),
     "js_modal_lightbox_initialy_zoomed": OptionInfo(True, "Show images zoomed in by default in full page image viewer"),
+    "show_progress_in_title": OptionInfo(True, "Show generation progress in window title."),
 }))
 
 options_templates.update(options_section(('sampler-params', "Sampler parameters"), {
